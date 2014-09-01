@@ -555,7 +555,39 @@ class NCUser(NCAPI):
         pass
 
     def get_pricing(self, product_type, product_category=None, coupon=None):
-        pass
+        args = dict()
+        args['ProductType'] = product_type
+        if product_category:
+            args['ProductCategory'] = product_category
+
+        if coupon:
+            args['PromotionCode'] = coupon
+
+        doc = self._call('users.getPricing', args)
+
+        results = doc['CommandResponse'] \
+            .findall(self.client.get_xml_name('UserGetPricingResult'))[0] \
+            .findall(self.client.get_xml_name('ProductType'))[0] \
+            .findall(self.client.get_xml_name('ProductCategory'))
+
+        ret = dict()
+        for category in results:
+            ret[category.attrib['Name']] = dict()
+            for tld in category.findall(self.client.get_xml_name('Product')):
+                ret[category.attrib['Name']][tld.attrib['Name']] = dict()
+
+                for price in tld.findall(self.client.get_xml_name('Price')):
+                    ret[category.attrib['Name']][tld.attrib['Name']][price.attrib['Duration']] = dict()
+                    ret[category.attrib['Name']][tld.attrib['Name']][price.attrib['Duration']] = {
+                            'DurationType': price.attrib['DurationType'],
+                            'RegularPrice': price.attrib['RegularPrice'],
+                            'YourPrice': price.attrib['YourPrice'],
+                            'PromotionPrice': price.attrib['PromotionPrice'],
+                            'RegularAdditionalCost': price.attrib['RegularAdditionalCost'] \
+                                    if 'RegularAdditionalCost' in price.attrib else '0'
+                    }
+
+        return ret
 
     def get_balances(self):
         pass
