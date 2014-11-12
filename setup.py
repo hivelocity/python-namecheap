@@ -29,11 +29,12 @@ from setuptools import setup, find_packages
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    with open(os.path.join(os.path.dirname(__file__), fname)) as fp:
+        return fp.read()
 
 setup(
     name='namecheap',
-    version='develop',
+    version='develop-hivelocity-1',
     url='http://www.github.com/mvillalba/python-namecheap/',
     license='MIT',
     description='Python wrapper for Namecheap\'s API.',
