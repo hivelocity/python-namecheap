@@ -514,12 +514,50 @@ class NCSSL(NCAPI):
             return value[0].text
         return ""
 
+    def _extract_value_from_csr_details(self, result, key):
+        value = result.findall(self.build_xml_path('CSRDetails/{}'.format(key)))[:1]
+        if value:
+            return value[0].text
+        return ""
 
     def parse_csr(self, csr, certificate_type=None):
-        pass
+        args = {'csr': csr}
+        if certificate_type:
+            args['certificate_type'] = certificate_type
+        doc = self._call('ssl.parseCSR', args)
+
+        result = doc['CommandResponse'].find(self.build_xml_path('SSLParseCSRResult'))
+        ret = {
+            k: self._extract_value_from_csr_details(result, k)
+            for k in ('CommonName', 'DomainName', 'Country',
+                      'OrganisationUnit', 'Organisation', 'ValidTrueDomain',
+                      'State', 'Locality', 'Email')
+        }
+        return ret
 
     def get_approver_email_list(self, domain, certificate_type):
-        pass
+        """
+        :rtype: dict
+        :return: A dictionary of the format:
+
+            {
+                "domain": ['email@whoisprivacyservices.com.au'],
+                "generic": ['webmaster@yo.com', 'postmaster@yo.com'],
+                "manual": [],
+            }
+        """
+
+        doc = self._call('ssl.getApproverEmailList', {
+            'DomainName': domain,
+            'CertificateType': certificate_type,
+        })
+
+        result = doc['CommandResponse'].find(self.build_xml_path('GetApproverEmailListResult'))
+        ret = {
+            k.lower(): [email.text for email in result.findall(self.build_xml_path('{}emails/email'.format(k)))]
+            for k in ('Domain', 'Generic', 'Manual')
+        }
+        return ret
 
     def get_list(self, list_type=None, search_term=None, sort_by=None,
                  page=None, page_size=None):
