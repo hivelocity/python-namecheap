@@ -34,8 +34,8 @@ def read(fname):
 
 setup(
     name='namecheap',
-    version='develop-hivelocity-1',
-    url='http://www.github.com/mvillalba/python-namecheap/',
+    version='0.0.1-hivelocity',
+    url='http://www.github.com/hivelocity/python-namecheap/',
     license='MIT',
     description='Python wrapper for Namecheap\'s API.',
     author=u'Mart\u00EDn Ra\u00FAl Villalba',
