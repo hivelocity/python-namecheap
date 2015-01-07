@@ -23,5 +23,7 @@
 #
 ##############################################################################
 
-__version__ = 'develop'
+from . import client, exceptions, api
+
+__version__ = '0.1.1-hivelocity'
 __all__ = ['client', 'exceptions', 'api']
