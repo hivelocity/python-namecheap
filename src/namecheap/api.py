@@ -478,7 +478,11 @@ class NCSSL(NCAPI):
             'IssuedOn': result.attrib['IssuedOn'],
             'Expires': result.attrib['Expires'],
             'ActivationExpireDate': result.attrib['ActivationExpireDate'],
-            'OrderId': int(result.attrib['OrderId'])
+            'OrderId': int(result.attrib['OrderId']),
+            'ApproverEmail': self._extract_value_from_details(result, 'ApproverEmail'),
+            'CommonName': self._extract_value_from_details(result, 'CommonName'),
+            'AdministratorName': self._extract_value_from_details(result, 'AdministratorName'),
+            'AdministratorEmail': self._extract_value_from_details(result, 'AdministratorEmail'),
         }
         if return_certificate and ret['Status'].lower() == 'active':
             certificates_element = result.findall(self.build_xml_path('CertificateDetails/Certificates'))
@@ -496,10 +500,6 @@ class NCSSL(NCAPI):
                     if certificate.attrib['Type'] == "INTERMEDIATE":
                         certificates["ca"] = certificate.find(self.build_xml_path("Certificate")).text
             ret['Certificates'] = certificates
-            ret['ApproverEmail'] = self._extract_value_from_details(result, 'ApproverEmail')
-            ret['CommonName'] = self._extract_value_from_details(result, 'CommonName')
-            ret['AdministratorName'] = self._extract_value_from_details(result, 'AdministratorName')
-            ret['AdministratorEmail'] = self._extract_value_from_details(result, 'AdministratorEmail')
 
         return ret
 
