@@ -437,11 +437,6 @@ class NCSSL(NCAPI):
         if isinstance(contact_data, dict):
             args.update(contact_data)
 
-        assert approver_email.split('@')[0] in (
-                'admin', 'administrator', 'hostmaster',
-                'webmaster', 'postmaster'
-            ), 'The approver email is not correct.'
-
         doc = self._call('ssl.activate', args)
 
         result = doc['CommandResponse'] \
