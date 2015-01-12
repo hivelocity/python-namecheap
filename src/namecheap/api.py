@@ -426,8 +426,17 @@ class NCSSL(NCAPI):
 
         Online docs:
         http://www.namecheap.com/support/api/ssl/namecheap.ssl.activate.aspx
-
         """
+        return self._activate(certificate_id, approver_email, csr,
+                              web_server_type, contact_data)
+
+    def reissue(self, certificate_id, approver_email, csr, web_server_type,
+                contact_data):
+        return self._activate(certificate_id, approver_email, csr,
+                              web_server_type, contact_data, reissue=True)
+
+    def _activate(self, certificate_id, approver_email, csr, web_server_type,
+                  contact_data, reissue=False):
         args = {
             'CertificateID': certificate_id,
             'ApproverEmail': approver_email,
@@ -437,7 +446,8 @@ class NCSSL(NCAPI):
         if isinstance(contact_data, dict):
             args.update(contact_data)
 
-        doc = self._call('ssl.activate', args)
+        meth = 'ssl.reissue' if reissue else 'ssl.activate'
+        doc = self._call(meth, args)
 
         result = doc['CommandResponse'] \
             .findall(self.client.get_xml_name('SSLActivateResult'))[0]
@@ -551,6 +561,36 @@ class NCSSL(NCAPI):
         ret = {
             k.lower(): [email.text for email in result.findall(self.build_xml_path('{}emails/email'.format(k)))]
             for k in ('Domain', 'Generic', 'Manual')
+        }
+        return ret
+
+    def renew(self, certificate_id, years, ssl_type):
+        """Renews an expiring SSL certificate.
+
+        Online docs:
+        http://www.namecheap.com/support/api/ssl/namecheap.ssl.create.aspx
+
+        """
+        args = {
+            'Years': years,
+            'SSLType': ssl_type,
+            'CertificateID': certificate_id,
+        }
+
+        doc = self._call('ssl.renew', args)
+
+        result = doc['CommandResponse'] \
+            .findall(self.client.get_xml_name('SSLRenewResult'))[0]
+
+        assert int(result.attrib['Years']) == years, \
+               'Got an unexpected amount of years.'
+
+        ret = {
+            'CertificateID': int(result.attrib['CertificateID']),
+            'Years': int(result.attrib['Years']),
+            'OrderId': int(result.attrib['OrderId']),
+            'TransactionId': int(result.attrib['TransactionId']),
+            'ChargedAmount': Decimal(result.attrib['ChargedAmount']),
         }
         return ret
 
