@@ -559,7 +559,12 @@ class NCSSL(NCAPI):
 
         result = doc['CommandResponse'].find(self.build_xml_path('GetApproverEmailListResult'))
         ret = {
-            k.lower(): [email.text for email in result.findall(self.build_xml_path('{}emails/email'.format(k)))]
+            k.lower(): [
+                email.text
+                for email in result.findall(self.build_xml_path('{}emails/email'.format(k)))
+                # Namecheap may literally return 'none' for domain emails
+                if email.text.strip().lower() != 'none'
+            ]
             for k in ('Domain', 'Generic', 'Manual')
         }
         return ret
