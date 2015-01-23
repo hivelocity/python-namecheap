@@ -623,8 +623,25 @@ class NCSSL(NCAPI):
         }
         return ret
 
-    def resend_fullfillment_email(self, certificate_id):
-        pass
+    def resend_fulfillment_email(self, certificate_id):
+        """Resends the fulfillment email (with the cert).
+
+        Online docs:
+        https://www.namecheap.com/support/api/methods/ssl/resend-fulfillment-email.aspx
+
+        """
+        args = {'CertificateID': certificate_id}
+
+        doc = self._call('ssl.resendfulfillmentemail', args)
+
+        result = doc['CommandResponse'] \
+            .findall(self.client.get_xml_name('SSLResendFulfillmentEmailResult'))[0]
+
+        ret = {
+            'ID': int(result.attrib['ID']),
+            'IsSuccess': self._bool(result.attrib['IsSuccess'])
+        }
+        return ret
 
 
 class NCUser(NCAPI):
