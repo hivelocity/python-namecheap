@@ -450,7 +450,8 @@ class NCSSL(NCAPI):
         doc = self._call(meth, args)
 
         result = doc['CommandResponse'] \
-            .findall(self.client.get_xml_name('SSLActivateResult'))[0]
+            .findall(self.client.get_xml_name(
+                'SSLReissueResult' if reissue else 'SSLActivateResult'))[0]
 
         ret = {
             'ID': int(result.attrib['ID']),
