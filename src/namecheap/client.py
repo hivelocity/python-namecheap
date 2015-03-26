@@ -90,6 +90,9 @@ class NCClient(object):
             'ExecutionTime': None,
         }
 
+        # Namecheap is ridiculous.
+        response = response.strip('\x00')
+
         root = ElementTree.fromstring(response)
 
         doc['Status'] = root.attrib['Status']
