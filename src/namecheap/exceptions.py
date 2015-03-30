@@ -278,6 +278,24 @@ NC_PARAM_TEXT = {
 
 
 class NCError(Exception):
+    def __init__(self, doc, text):
+        self.doc = doc
+        self.text = text
+
+        # Set these fields, for parity with NCResponseError
+        self.number = None
+        self.system = None
+        self.error = None
+        self.param = None
+
+        self.system_text = None
+        self.error_text = None
+        self.param_text = None
+
+        Exception.__init__(self, self.text)
+
+
+class NCResponseError(NCError):
     def __init__(self, doc):
         self.doc = doc
         self.number = doc['Errors']['Number']
@@ -298,37 +316,37 @@ class NCError(Exception):
         )
 
 
-class NCAuthenticationError(NCError):
+class NCAuthenticationError(NCResponseError):
     pass
 
 
-class NCValidationError(NCError):
+class NCValidationError(NCResponseError):
     pass
 
 
-class NCPaymentError(NCError):
+class NCPaymentError(NCResponseError):
     pass
 
 
-class NCProviderError(NCError):
+class NCProviderError(NCResponseError):
     pass
 
 
-class NCPolicyError(NCError):
+class NCPolicyError(NCResponseError):
     pass
 
 
-class NCSystemError(NCError):
+class NCSystemError(NCResponseError):
     pass
 
 
-class NCUnknownError(NCError):
+class NCUnknownError(NCResponseError):
     pass
 
 
-class NCCertificatesNotFoundError(Exception):
+class NCCertificatesNotFoundError(NCError):
     pass
 
 
-class NCCRTNotFoundError(Exception):
+class NCCRTNotFoundError(NCError):
     pass

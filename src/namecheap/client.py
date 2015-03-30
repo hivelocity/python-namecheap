@@ -28,6 +28,7 @@ from xml.etree import ElementTree
 
 from namecheap.api import NCDomain, NCDomainDNS, NCDomainNS, NCDomainTransfer
 from namecheap.api import NCSSL, NCUser, NCUserAddress
+from namecheap.exceptions import NCError
 
 NC_SANDBOX = "https://api.sandbox.namecheap.com/xml.response"
 NC_PRODUCTION = "https://api.namecheap.com/xml.response"
@@ -130,6 +131,11 @@ class NCClient(object):
         exectime = root.findall(self.get_xml_name('ExecutionTime'))
         if len(exectime) > 0:
             doc['ExecutionTime'] = Decimal(exectime[0].text)
+
+        # Using lower(), because I don't know what case namecheap might return
+        # on a Tuesday
+        if doc['Status'].lower() == 'error':
+            raise NCError(doc, 'Unknown error!')
 
         return doc
 
