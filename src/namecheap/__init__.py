@@ -25,5 +25,5 @@
 
 from . import client, exceptions, api
 
-__version__ = '0.1.8-hivelocity'
+__version__ = '0.1.9-hivelocity'
 __all__ = ['client', 'exceptions', 'api']
