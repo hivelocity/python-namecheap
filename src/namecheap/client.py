@@ -133,7 +133,9 @@ class NCClient(object):
 
         return doc
 
-    def _call(self, command, args={}):
+    def _call(self, command, args=None):
+        if args is None:
+            args = {}
         url = self._make_url(command, args)
         response = urllib2.urlopen(url)
         doc = self._process_response(response.read())
