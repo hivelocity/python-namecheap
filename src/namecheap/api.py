@@ -686,7 +686,19 @@ class NCUser(NCAPI):
         return ret
 
     def get_balances(self):
-        pass
+        doc = self._call('users.getBalances')
+
+        result = doc['CommandResponse'].find(self.build_xml_path('UserGetBalancesResult'))
+        ret = {
+            k: result.attrib[k]
+            for k in ('Currency', 'AvailableBalance', 'AccountBalance',
+                      'EarnedAmount', 'WithdrawableAmount',
+                      'FundsRequiredForAutoRenew')
+        }
+        for k in ('AvailableBalance', 'AccountBalance', 'EarnedAmount',
+                  'WithdrawableAmount', 'FundsRequiredForAutoRenew'):
+            ret[k] = Decimal(ret[k])
+        return ret
 
     def change_password(self, old_password, new_password):
         pass
