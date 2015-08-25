@@ -1,1 +1,1 @@
-VERSION = '0.1.9-hivelocity'
+VERSION = '0.2.0+hivelocity'
