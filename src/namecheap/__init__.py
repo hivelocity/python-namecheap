@@ -24,6 +24,7 @@
 ##############################################################################
 
 from . import client, exceptions, api
+from .version import VERSION
 
-__version__ = '0.1.9-hivelocity'
+__version__ = VERSION
 __all__ = ['client', 'exceptions', 'api']

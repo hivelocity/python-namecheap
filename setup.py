@@ -25,21 +25,27 @@
 
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
+root = os.path.dirname(__file__)
+sys.path.append(os.path.join(root, 'src'))
+
+import imp
 from setuptools import setup, find_packages
-
-import namecheap
 
 
 def read(fname):
-    with open(os.path.join(os.path.dirname(__file__), fname)) as fp:
+    with open(os.path.join(root, fname)) as fp:
         return fp.read()
+
+
+_version_module = imp.load_source('namecheap.version',
+                                  os.path.join(root, 'src/namecheap/version.py'))
+version = _version_module.VERSION
 
 
 setup(
     name='namecheap',
-    version=namecheap.__version__,
+    version=version,
     url='http://www.github.com/hivelocity/python-namecheap/',
     license='MIT',
     description='Python wrapper for Namecheap\'s API.',
